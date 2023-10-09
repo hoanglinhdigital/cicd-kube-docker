@@ -53,8 +53,11 @@ pipeline {
 
         stage('Kubernetes deploy'){
             steps{
-                sh "aws eks update-kubeconfig --region ap-southeast-1 --name udemy-eks"
-                sh "helm upgrade --install --force vprofile-stack helm/vprofilecharts --set appimage=${registry}:V${BUILD_NUMBER} --namespace prod"
+                withAWS(credentials: 'jenkins-aws', region: 'ap-southeast-1') {
+                    sh "aws eks update-kubeconfig --region ap-southeast-1 --name udemy-eks"
+                    sh "helm upgrade --install --force vprofile-stack helm/vprofilecharts --set appimage=${registry}:V${BUILD_NUMBER} --namespace prod"
+                }
+
             }
         }
     }
